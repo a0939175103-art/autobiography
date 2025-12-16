@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>學測英文單字複習</title>
+<style>
+body {
+    font-family: "Microsoft JhengHei", sans-serif;
+    background: #f4f6f8;
+    text-align: center;
+    padding: 30px;
+}
+.container {
+    max-width: 500px;
+    margin: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+h1 {
+    margin-bottom: 10px;
+}
+.word {
+    font-size: 32px;
+    margin: 20px 0;
+}
+.meaning {
+    font-size: 20px;
+    color: #555;
+    margin-bottom: 20px;
+}
+button {
+    padding: 10px 18px;
+    margin: 5px;
+    border: none;
+    border-radius: 6px;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+}
+button:hover {
+    background: #0056b3;
+}
+.option {
+    display: block;
+    width: 100%;
+    margin: 8px 0;
+    background: #e9ecef;
+    color: black;
+}
+.option:hover {
+    background: #ced4da;
+}
+.score {
+    margin-top: 15px;
+    font-size: 16px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>📘 學測英文單字複習</h1>
+
+    <div id="flashcard">
+        <div class="word" id="word"></div>
+        <div class="meaning" id="meaning">（點擊顯示中文）</div>
+        <button onclick="toggleMeaning()">顯示 / 隱藏中文</button>
+        <button onclick="nextWord()">下一個</button>
+        <hr>
+        <button onclick="startQuiz()">開始測驗模式</button>
+    </div>
+
+    <div id="quiz" style="display:none;">
+        <div class="word" id="quizWord"></div>
+        <div id="options"></div>
+        <div class="score" id="score"></div>
+        <button onclick="nextQuiz()">下一題</button>
+        <button onclick="backToFlashcard()">回單字卡</button>
+    </div>
+</div>
+
+<script>
+// ===== 學測單字（可自行新增）=====
+const vocabList = [
+    { word: "achieve", meaning: "達成" },
+    { word: "benefit", meaning: "好處" },
+    { word: "challenge", meaning: "挑戰" },
+    { word: "determine", meaning: "決定" },
+    { word: "efficient", meaning: "有效率的" },
+    { word: "increase", meaning: "增加" },
+    { word: "maintain", meaning: "維持" },
+    { word: "opportunity", meaning: "機會" },
+    { word: "responsible", meaning: "有責任的" },
+    { word: "various", meaning: "各種的" }
+];
+
+let index = 0;
+let showMeaning = false;
+let score = 0;
+
+// ===== 單字卡 =====
+function loadWord() {
+    document.getElementById("word").textContent = vocabList[index].word;
+    document.getElementById("meaning").textContent = showMeaning ? vocabList[index].meaning : "（點擊顯示中文）";
+}
+
+function toggleMeaning() {
+    showMeaning = !showMeaning;
+    loadWord();
+}
+
+function nextWord() {
+    index = (index + 1) % vocabList.length;
+    showMeaning = false;
+    loadWord();
+}
+
+// ===== 測驗模式 =====
+function startQuiz() {
+    document.getElementById("flashcard").style.display = "none";
+    document.getElementById("quiz").style.display = "block";
+    score = 0;
+    nextQuiz();
+}
+
+function nextQuiz() {
+    const q = vocabList[Math.floor(Math.random() * vocabList.length)];
+    document.getElementById("quizWord").textContent = q.word;
+
+    let options = [q.meaning];
+    while (options.length < 4) {
+        let rand = vocabList[Math.floor(Math.random() * vocabList.length)].meaning;
+        if (!options.includes(rand)) options.push(rand);
+    }
+    options.sort(() => Math.random() - 0.5);
+
+    const optionDiv = document.getElementById("options");
+    optionDiv.innerHTML = "";
+    options.forEach(opt => {
+        let btn = document.createElement("button");
+        btn.textContent = opt;
+        btn.className = "option";
+        btn.onclick = () => {
+            if (opt === q.meaning) {
+                score++;
+                alert("✔ 正確！");
+            } else {
+                alert("✘ 錯誤，正確答案是：" + q.meaning);
+            }
+            document.getElementById("score").textContent = "目前得分：" + score;
+        };
+        optionDiv.appendChild(btn);
+    });
+}
+
+function backToFlashcard() {
+    document.getElementById("quiz").style.display = "none";
+    document.getElementById("flashcard").style.display = "block";
+}
+
+// 初始化
+loadWord();
+</script>
+
+</body>
+</html>
